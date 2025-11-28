@@ -95,6 +95,17 @@ const Dashboard = () => {
               variant="outline"
               className="flex items-center gap-2"
             >
+              <Link to="/upload" className="flex items-center gap-2">
+                <Upload className="h-4 w-4" />
+                <span>Upload Data</span>
+              </Link>
+            </Button>
+
+            <Button
+              asChild
+              variant="outline"
+              className="flex items-center gap-2"
+            >
               <Link to="/planner" className="flex items-center gap-2">
                 <LineChart className="h-4 w-4" />
                 <span>Payment Planner</span>

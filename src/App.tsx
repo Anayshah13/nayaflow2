@@ -11,11 +11,11 @@ import LoanOffers from "./pages/LoanOffers";
 import PaymentPlanner from "./pages/PaymentPlanner";
 import DataUpload from "./pages/DataUpload";
 import NotFound from "./pages/NotFound";
+import AIPoweredScoring from "./pages/AIPoweredScoring";
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -24,6 +24,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/ai" element={<AIPoweredScoring />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/offers" element={<LoanOffers />} />
@@ -34,7 +35,6 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-  
 );
 
 export default App;

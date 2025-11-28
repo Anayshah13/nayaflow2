@@ -4,10 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowRight, LogIn, UserPlus, Mail, Lock } from "lucide-react";
+
+/**
+ * Dummy auth: accepts any email/password and treats the user as signed in.
+ * Stores a minimal flag in localStorage to simulate a session for the demo.
+ */
+
+const DUMMY_SESSION_KEY = "nayaflow_demo_user";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,64 +22,36 @@ const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate('/dashboard');
-      }
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate('/dashboard');
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    // Auto-redirect if a dummy session exists
+    const stored = localStorage.getItem(DUMMY_SESSION_KEY);
+    if (stored) {
+      navigate("/dashboard");
+    }
   }, [navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`
-        }
-      });
-
-      if (error) throw error;
-
-      toast.success("Check your email for the confirmation link!");
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
+    // Simulate network latency for UX
+    setTimeout(() => {
+      localStorage.setItem(DUMMY_SESSION_KEY, email || "anonymous@demo");
+      toast.success("Account created — signed in (demo)");
       setIsLoading(false);
-    }
+      navigate("/dashboard");
+    }, 600);
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      toast.success("Welcome back!");
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
+    setTimeout(() => {
+      localStorage.setItem(DUMMY_SESSION_KEY, email || "anonymous@demo");
+      toast.success("Signed in (demo)");
       setIsLoading(false);
-    }
+      navigate("/dashboard");
+    }, 500);
   };
 
   return (
@@ -82,14 +60,16 @@ const Auth = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="gap-2 flex items-center justify-center">
-              <img
-                src="LOGO.png"
-                alt="NayaFlow Logo"
-                className="w-74 h-24 mb-5"
-              />
+            <img
+              src="LOGO.png"
+              alt="NayaFlow Logo"
+              className="w-74 h-24 mb-5"
+            />
           </div>
           <h1 className="text-3xl font-bold mb-2">Welcome</h1>
-          <p className="text-muted-foreground">Sign in to your account or create a new one</p>
+          <p className="text-muted-foreground">
+            Sign in to your account or create a new one
+          </p>
         </div>
 
         <Card className="bg-gradient-card border-0 shadow-lg">
@@ -135,9 +115,9 @@ const Auth = () => {
                       />
                     </div>
                   </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
+                  <Button
+                    type="submit"
+                    className="w-full"
                     variant="fintech"
                     disabled={isLoading}
                   >
@@ -180,9 +160,9 @@ const Auth = () => {
                       />
                     </div>
                   </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
+                  <Button
+                    type="submit"
+                    className="w-full"
                     variant="hero"
                     disabled={isLoading}
                   >
@@ -194,9 +174,9 @@ const Auth = () => {
             </Tabs>
 
             <div className="mt-6 text-center">
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate('/')}
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/")}
                 className="text-sm"
               >
                 ← Back to Home
